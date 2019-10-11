@@ -2,7 +2,6 @@ defmodule Ueberauth.Strategy.LinkedIn do
   @moduledoc """
   LinkedIn Strategy for Überauth.
   """
-  @primary_contact_url "https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(primary,type,handle~))"
 
   use Ueberauth.Strategy,
     uid_field: :id,
@@ -103,7 +102,6 @@ defmodule Ueberauth.Strategy.LinkedIn do
   """
   def info(conn) do
     user = conn.private.linkedin_user
-    primary_contact = conn.private.linkedin_primary_contact
 
     %Info{
       first_name: user["localizedFirstName"],
@@ -119,8 +117,7 @@ defmodule Ueberauth.Strategy.LinkedIn do
     do: %Extra{
       raw_info: %{
         token: conn.private.linkedin_token,
-        user: conn.private.linkedin_user,
-        primary_contact: conn.private.linkedin_primary_contact
+        user: conn.private.linkedin_user
       }
     }
 
