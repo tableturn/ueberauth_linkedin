@@ -50,7 +50,6 @@ defmodule Ueberauth.Strategy.LinkedIn do
         conn
         |> delete_resp_cookie(@state_cookie_name)
         |> fetch_user(token)
-        |> fetch_primary_contact()
       else
         conn
         |> delete_resp_cookie(@state_cookie_name)
@@ -108,9 +107,7 @@ defmodule Ueberauth.Strategy.LinkedIn do
 
     %Info{
       first_name: user["localizedFirstName"],
-      image: info_image(user),
-      last_name: user["localizedLastName"],
-      email: email_from_primary_contact(primary_contact)
+      last_name: user["localizedLastName"]
     }
   end
 
@@ -145,46 +142,6 @@ defmodule Ueberauth.Strategy.LinkedIn do
       {:error, %OAuth2.Error{reason: reason}} ->
         set_errors!(conn, [error("OAuth2", reason)])
     end
-  end
-
-  defp fetch_primary_contact(conn) do
-    token = conn.private.linkedin_token
-
-    resp =
-      Ueberauth.Strategy.LinkedIn.OAuth.get(
-        token,
-        @primary_contact_url,
-        [],
-        skip_url_encode_option()
-      )
-
-    case resp do
-      {:ok, %OAuth2.Response{status_code: status_code, body: primary_contact}}
-      when status_code in 200..399 ->
-        put_private(conn, :linkedin_primary_contact, primary_contact)
-
-      {:error, %OAuth2.Error{reason: reason}} ->
-        set_errors!(conn, [error("OAuth2", reason)])
-    end
-  end
-
-  defp info_image(user) do
-    user
-    |> get_in(["profilePicture", "displayImage~", "elements"])
-    |> List.last()
-    |> get_in(["identifiers"])
-    |> List.last()
-    |> get_in(["identifier"])
-  end
-
-  defp email_from_primary_contact(primary_contact) do
-    email_element =
-      primary_contact["elements"]
-      |> Enum.find(fn element ->
-        element["primary"] == true && element["type"] == "EMAIL"
-      end)
-
-    if email = email_element |> get_in(["handle~", "emailAddress"]), do: email, else: nil
   end
 
   defp option(conn, key) do
