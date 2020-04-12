@@ -2,14 +2,8 @@ defmodule Ueberauth.Strategy.LinkedIn do
   @moduledoc """
   LinkedIn Strategy for Überauth.
   """
-
-  use Ueberauth.Strategy,
-    uid_field: :id,
-    default_scope: "r_liteprofile r_emailaddress"
-
-  alias Ueberauth.Auth.Info
-  alias Ueberauth.Auth.Credentials
-  alias Ueberauth.Auth.Extra
+  alias Ueberauth.Auth.{Info, Credentials, Extra}
+  use Ueberauth.Strategy, uid_field: :id, default_scope: "r_liteprofile r_emailaddress"
 
   @state_cookie_name "ueberauth_linkedin_state"
 
@@ -35,7 +29,7 @@ defmodule Ueberauth.Strategy.LinkedIn do
     %OAuth2.Client{token: token} =
       Ueberauth.Strategy.LinkedIn.OAuth.get_token!([code: code], opts)
 
-    if token.access_token == nil do
+    if nil == token.access_token do
       conn
       |> delete_resp_cookie(@state_cookie_name)
       |> set_errors!([
