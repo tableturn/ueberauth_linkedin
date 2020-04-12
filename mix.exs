@@ -27,9 +27,9 @@ defmodule UeberauthLinkedin.Mixfile do
 
   defp deps,
     do: [
-      {:ueberauth, "~> 0.3"},
+      {:ueberauth, "~> 0.6"},
       {:oauth2, "~> 2.0"},
-      {:earmark, "~> 1.3", only: :dev},
+      {:earmark, "~> 1.4.3", only: :dev},
       {:ex_doc, "~> 0.21", only: :dev}
     ]
 
